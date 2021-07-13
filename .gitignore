@@ -71,6 +71,7 @@ dist/
 nbdist/
 nbactions.xml
 nb-configuration.xml
+build.xml
 
 ##############################
 ## Visual Studio Code
@@ -82,3 +83,7 @@ nb-configuration.xml
 ## OS X
 ##############################
 .DS_Store
+/sistemareserva.negocio/nbproject/private/
+/sistemareserva.data/nbproject/private/
+/sistemareserva.services/nbproject/private/
+/sistemareserva.mvc/nbproject/private/

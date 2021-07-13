@@ -6,45 +6,64 @@ import java.util.List;
 import Interfaces.Repository.IReservaRepository;
 import entity.ReservaModel;
 import exceptions.ReservaExceptions;
+import java.util.UUID;
 
 public class ReservaRepository implements IReservaRepository {
 
-	private List<ReservaModel> _dbContext;
+    private List<ReservaModel> _dbContext;
 
-	public ReservaRepository() {
-		_dbContext = new ArrayList<ReservaModel>();
-	}
+    public ReservaRepository() {
+        _dbContext = new ArrayList<ReservaModel>();
+    }
 
-	@Override
-	public void create(ReservaModel reservaModel) {
-		_dbContext.add(reservaModel);
+    @Override
+    public void create(ReservaModel reservaModel) {
+        _dbContext.add(reservaModel);
 
-	}
+    }
 
-	@Override
-	public ReservaModel getByReservaId(int reservaId) {
-		return getReservaModelById(reservaId);
-	}
+    @Override
+    public ReservaModel getByReservaId(UUID reservaId) throws ReservaExceptions {
+        ReservaModel reservaModel = getReservaModelById(reservaId);
+        if (reservaModel == null) {
+            throw new ReservaExceptions("Essa Reserva não existe");
+        }
 
-	@Override
-	public void cancelar(int reservaId) throws ReservaExceptions {
-		ReservaModel reservaModel = getReservaModelById(reservaId);
-		
-		if(reservaModel == null) {
-			throw new ReservaExceptions("Essa Reserva n�o existe");
-		}
-		_dbContext.remove(reservaModel);
-		
-	}
-	
-	private ReservaModel getReservaModelById(int reservaId) {
-		for (ReservaModel model : _dbContext) {
-			if (model.getId() == reservaId) {
-				return model;
-			}
-		}
-		
-		return null;
-	}
+        return reservaModel;
+
+    }
+
+    @Override
+    public void cancelar(UUID reservaId) throws ReservaExceptions {
+        ReservaModel reservaModel = getReservaModelById(reservaId);
+
+        if (reservaModel == null) {
+            throw new ReservaExceptions("Essa Reserva não existe");
+        }
+        _dbContext.remove(reservaModel);
+
+    }
+
+    @Override
+    public List<ReservaModel> getReservasByUsuarioId(UUID usuarioId) {
+        List<ReservaModel> reservas = new ArrayList<>();
+        for (ReservaModel model : _dbContext) {
+            if (model.getUsuarioId() == usuarioId) {
+                reservas.add(model);
+            }
+        }
+
+        return reservas;
+    }
+
+    private ReservaModel getReservaModelById(UUID reservaId) {
+        for (ReservaModel model : _dbContext) {
+            if (model.getId() == reservaId) {
+                return model;
+            }
+        }
+
+        return null;
+    }
 
 }
