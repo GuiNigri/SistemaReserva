@@ -6,15 +6,20 @@
 package View;
 
 import Controller.ReservaController;
+import Controller.RotaController;
 import Controller.UsuarioController;
 import Repository.ReservaRepository;
+import Repository.RotaRepository;
 import Repository.UsuarioRepository;
 import entity.ReservaModel;
+import entity.RotaModel;
 import entity.UsuarioModel;
 import java.util.List;
 import java.util.UUID;
 import javax.swing.JMenuItem;
+import javax.swing.table.DefaultTableModel;
 import sistemareserva.services.ReservaService;
+import sistemareserva.services.RotaService;
 import sistemareserva.services.UsuarioService;
 
 /**
@@ -25,6 +30,7 @@ public class HomeView extends javax.swing.JFrame {
 
     private ReservaController _reservaController;
     private UsuarioController _usuarioController;
+    private RotaController _rotaController;
 
     public static boolean Logado = false;
     public static UsuarioModel usuarioLogado;
@@ -41,7 +47,13 @@ public class HomeView extends javax.swing.JFrame {
         UsuarioService usuarioService = new UsuarioService(usuarioRepository);
         _usuarioController = new UsuarioController(usuarioService);
 
+        RotaRepository rotaRepository = new RotaRepository();
+        RotaService rotaService = new RotaService(rotaRepository);
+        _rotaController = new RotaController(rotaService);
+
         initComponents();
+
+        getAllRotas();
         setLocationRelativeTo(null);
     }
 
@@ -55,7 +67,7 @@ public class HomeView extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableRotas = new javax.swing.JTable();
         btnReservar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -66,18 +78,18 @@ public class HomeView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableRotas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "teste"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tableRotas);
+        if (tableRotas.getColumnModel().getColumnCount() > 0) {
+            tableRotas.getColumnModel().getColumn(0).setMaxWidth(0);
+        }
 
         btnReservar.setText("Reservar");
         btnReservar.addActionListener(new java.awt.event.ActionListener() {
@@ -213,6 +225,29 @@ public class HomeView extends javax.swing.JFrame {
         Logado = false;
     }//GEN-LAST:event_menuSairActionPerformed
 
+    private void getAllRotas() {
+        List<RotaModel> rotas = _rotaController.getAll();
+        DefaultTableModel tabela = new DefaultTableModel();
+
+        tabela.addColumn("");
+        tabela.addColumn("Origem");
+        tabela.addColumn("Destino");
+        tabela.addColumn("Valor");
+        
+        
+
+        if (!rotas.isEmpty()) {
+
+            for (RotaModel model : rotas) {
+                tabela.addRow(new Object[]{model.getID(), model.getOrigem(), model.getDestino(), model.getValor()});
+            }
+        }
+
+        tableRotas.setModel(tabela);
+        tableRotas.getColumnModel().getColumn(0).setMaxWidth(0);
+        tableRotas.getColumnModel().getColumn(0).setResizable(false);
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -253,10 +288,10 @@ public class HomeView extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JMenuItem menuCadastrar;
     private javax.swing.JMenuItem menuEntrar;
     private javax.swing.JMenuItem menuMinhasReservas;
     private javax.swing.JMenuItem menuSair;
+    private javax.swing.JTable tableRotas;
     // End of variables declaration//GEN-END:variables
 }
