@@ -21,7 +21,7 @@ public class UsuarioController{
         _usuarioService = usuarioService;
     }
 
-    public boolean logar(String cpf, String senha) throws UsuarioExceptions{
+    public UsuarioModel logar(String cpf, String senha) throws UsuarioExceptions{
         return _usuarioService.logar(cpf, senha);
     }
 

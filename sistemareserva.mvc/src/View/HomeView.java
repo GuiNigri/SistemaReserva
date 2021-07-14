@@ -10,6 +10,7 @@ import Controller.UsuarioController;
 import Repository.ReservaRepository;
 import Repository.UsuarioRepository;
 import entity.ReservaModel;
+import entity.UsuarioModel;
 import java.util.List;
 import java.util.UUID;
 import javax.swing.JMenuItem;
@@ -26,6 +27,7 @@ public class HomeView extends javax.swing.JFrame {
     private UsuarioController _usuarioController;
 
     public static boolean Logado = false;
+    public static UsuarioModel usuarioLogado;
 
     /**
      * Creates new form HomeView
@@ -161,7 +163,7 @@ public class HomeView extends javax.swing.JFrame {
 
     private void btnReservarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservarActionPerformed
         // TODO add your handling code here:
-        _reservaController.createReserva(new ReservaModel(UUID.randomUUID(), UUID.randomUUID()));
+        _reservaController.createReserva(new ReservaModel(UUID.randomUUID(), usuarioLogado.getId()));
     }//GEN-LAST:event_btnReservarActionPerformed
 
     private void menuCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCadastrarActionPerformed
@@ -173,7 +175,7 @@ public class HomeView extends javax.swing.JFrame {
 
     private void menuMinhasReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuMinhasReservasActionPerformed
         // TODO add your handling code here:
-        List<ReservaModel> reservas = _reservaController.getReservasByUsuarioId(UUID.randomUUID());
+        List<ReservaModel> reservas = _reservaController.getReservasByUsuarioId(usuarioLogado.getId());
 
         ReservaView reservasForm = new ReservaView();
         reservasForm.getReservas(reservas, _reservaController);
@@ -246,11 +248,6 @@ public class HomeView extends javax.swing.JFrame {
         });
     }
 
-    public static void alternarBotoes() {
-        if (Logado) {
-
-        }
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnReservar;
     private javax.swing.JMenu jMenu1;

@@ -6,6 +6,7 @@
 package View;
 
 import Controller.UsuarioController;
+import entity.UsuarioModel;
 import exceptions.UsuarioExceptions;
 import javax.swing.JOptionPane;
 
@@ -104,8 +105,9 @@ public class LoginView extends javax.swing.JFrame {
         String senha = txtSenha.getText();
 
         try {
-            _controller.logar(usuario, senha);
+            UsuarioModel usuarioLogado = _controller.logar(usuario, senha);
             HomeView.Logado = true;
+            HomeView.usuarioLogado = usuarioLogado;
             JOptionPane.showMessageDialog(null, "Usuario Logado com sucesso");
             dispose();
         } catch (UsuarioExceptions ex) {

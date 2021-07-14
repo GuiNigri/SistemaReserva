@@ -23,7 +23,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public boolean logar(String cpf, String senha) throws UsuarioExceptions {
+    public UsuarioModel logar(String cpf, String senha) throws UsuarioExceptions {
         if (cpf.equals("") || senha.equals("")) {
             throw new UsuarioExceptions("Todos os campos precisam estar preenchidos");
         }

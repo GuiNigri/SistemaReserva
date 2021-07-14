@@ -13,6 +13,6 @@ import exceptions.UsuarioExceptions;
  * @author Nigri
  */
 public interface IUsuarioService {
-    boolean logar(String cpf, String senha) throws UsuarioExceptions;
+    UsuarioModel logar(String cpf, String senha) throws UsuarioExceptions;
     void cadastrar(UsuarioModel usuarioModel) throws UsuarioExceptions;
 }

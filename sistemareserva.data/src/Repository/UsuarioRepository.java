@@ -24,10 +24,10 @@ public class UsuarioRepository implements IUsuarioRepository{
     }
     
     @Override
-    public boolean logar(String cpf, String senha) throws UsuarioExceptions{
+    public UsuarioModel logar(String cpf, String senha) throws UsuarioExceptions{
         for(UsuarioModel model : _dbContext){
             if(model.getCpf().equals(cpf) && model.getSenha().equals(senha)){
-                return true;
+                return model;
             }
         }
         
