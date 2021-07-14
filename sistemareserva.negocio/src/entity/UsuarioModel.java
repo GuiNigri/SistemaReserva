@@ -3,21 +3,36 @@ package entity;
 import java.util.UUID;
 
 public class UsuarioModel {
+
     private UUID id;
-    private String Nome;
-    private long Cpf;
-    
-    public UsuarioModel(String nome, long cpf){
-    	setId();
-        this.Nome = nome;
-        this.Cpf = cpf;
+    private String nome;
+    private String cpf;
+    private String senha;
+
+    public UsuarioModel(String nome, String cpf, String senha) {
+        setId();
+        this.nome = nome;
+        this.cpf = cpf;
+        this.senha = senha;
     }
 
-	public UUID getId() {
-		return id;
-	}
+    public UUID getId() {
+        return id;
+    }
 
-	public void setId() {
-		this.id = UUID.randomUUID();
-	}
+    public void setId() {
+        this.id = UUID.randomUUID();
+    }
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public String getCpf() {
+        return this.cpf;
+    }
+
+    public String getSenha() {
+        return this.senha;
+    }
 }

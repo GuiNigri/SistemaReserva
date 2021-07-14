@@ -6,11 +6,15 @@
 package View;
 
 import Controller.ReservaController;
+import Controller.UsuarioController;
 import Repository.ReservaRepository;
+import Repository.UsuarioRepository;
 import entity.ReservaModel;
 import java.util.List;
 import java.util.UUID;
+import javax.swing.JMenuItem;
 import sistemareserva.services.ReservaService;
+import sistemareserva.services.UsuarioService;
 
 /**
  *
@@ -18,7 +22,10 @@ import sistemareserva.services.ReservaService;
  */
 public class HomeView extends javax.swing.JFrame {
 
-    private ReservaController _controller;
+    private ReservaController _reservaController;
+    private UsuarioController _usuarioController;
+
+    public static boolean Logado = false;
 
     /**
      * Creates new form HomeView
@@ -26,7 +33,11 @@ public class HomeView extends javax.swing.JFrame {
     public HomeView() {
         ReservaRepository repository = new ReservaRepository();
         ReservaService service = new ReservaService(repository);
-        _controller = new ReservaController(service);
+        _reservaController = new ReservaController(service);
+
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        UsuarioService usuarioService = new UsuarioService(usuarioRepository);
+        _usuarioController = new UsuarioController(usuarioService);
 
         initComponents();
         setLocationRelativeTo(null);
@@ -74,8 +85,27 @@ public class HomeView extends javax.swing.JFrame {
         });
 
         jMenu1.setText("Usuario");
+        jMenu1.addMenuListener(new javax.swing.event.MenuListener() {
+            public void menuCanceled(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuDeselected(javax.swing.event.MenuEvent evt) {
+            }
+            public void menuSelected(javax.swing.event.MenuEvent evt) {
+                jMenu1MenuSelected(evt);
+            }
+        });
+        jMenu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu1ActionPerformed(evt);
+            }
+        });
 
         menuEntrar.setText("Entrar");
+        menuEntrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEntrarActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuEntrar);
 
         menuCadastrar.setText("Cadastrar");
@@ -95,6 +125,11 @@ public class HomeView extends javax.swing.JFrame {
         jMenu1.add(menuMinhasReservas);
 
         menuSair.setText("Sair");
+        menuSair.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuSairActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuSair);
 
         jMenuBar1.add(jMenu1);
@@ -126,21 +161,55 @@ public class HomeView extends javax.swing.JFrame {
 
     private void btnReservarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservarActionPerformed
         // TODO add your handling code here:
-        _controller.createReserva(new ReservaModel(UUID.randomUUID(), UUID.randomUUID()));
+        _reservaController.createReserva(new ReservaModel(UUID.randomUUID(), UUID.randomUUID()));
     }//GEN-LAST:event_btnReservarActionPerformed
 
     private void menuCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCadastrarActionPerformed
         // TODO add your handling code here:
+        CadastrarView cadastrarView = new CadastrarView();
+        cadastrarView.inicializarDependencia(_usuarioController);
+        cadastrarView.setVisible(true);
     }//GEN-LAST:event_menuCadastrarActionPerformed
 
     private void menuMinhasReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuMinhasReservasActionPerformed
         // TODO add your handling code here:
-        List<ReservaModel> reservas = _controller.getReservasByUsuarioId(UUID.randomUUID());
+        List<ReservaModel> reservas = _reservaController.getReservasByUsuarioId(UUID.randomUUID());
 
         ReservaView reservasForm = new ReservaView();
-        reservasForm.getReservas(reservas, _controller);
+        reservasForm.getReservas(reservas, _reservaController);
         reservasForm.setVisible(true);
     }//GEN-LAST:event_menuMinhasReservasActionPerformed
+
+    private void menuEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEntrarActionPerformed
+        LoginView loginView = new LoginView();
+        loginView.inicializarDependencias(_usuarioController);
+        loginView.setVisible(true);
+    }//GEN-LAST:event_menuEntrarActionPerformed
+
+    private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_jMenu1ActionPerformed
+
+    private void jMenu1MenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_jMenu1MenuSelected
+        // TODO add your handling code here:
+        if (Logado) {
+            menuEntrar.setVisible(false);
+            menuCadastrar.setVisible(false);
+            menuMinhasReservas.setVisible(true);
+            menuSair.setVisible(true);
+        } else {
+            menuEntrar.setVisible(true);
+            menuCadastrar.setVisible(true);
+            menuMinhasReservas.setVisible(false);
+            menuSair.setVisible(false);
+        }
+    }//GEN-LAST:event_jMenu1MenuSelected
+
+    private void menuSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSairActionPerformed
+        // TODO add your handling code here:
+        Logado = false;
+    }//GEN-LAST:event_menuSairActionPerformed
 
     /**
      * @param args the command line arguments
@@ -177,6 +246,11 @@ public class HomeView extends javax.swing.JFrame {
         });
     }
 
+    public static void alternarBotoes() {
+        if (Logado) {
+
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnReservar;
     private javax.swing.JMenu jMenu1;
