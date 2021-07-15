@@ -58,7 +58,7 @@ public class ReservaRepository implements IReservaRepository {
 
     private ReservaModel getReservaModelById(UUID reservaId) {
         for (ReservaModel model : _dbContext) {
-            if (model.getId() == reservaId) {
+            if (model.getId().equals(reservaId)) {
                 return model;
             }
         }

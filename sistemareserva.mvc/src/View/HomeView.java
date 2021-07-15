@@ -5,19 +5,23 @@
  */
 package View;
 
+import Controller.LogController;
 import Controller.ReservaController;
 import Controller.RotaController;
 import Controller.UsuarioController;
+import Repository.LogRepository;
 import Repository.ReservaRepository;
 import Repository.RotaRepository;
 import Repository.UsuarioRepository;
+import ViewModel.RotaViewModel;
 import entity.ReservaModel;
-import entity.RotaModel;
 import entity.UsuarioModel;
+import exceptions.ReservaExceptions;
 import java.util.List;
 import java.util.UUID;
-import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import sistemareserva.services.LogService;
 import sistemareserva.services.ReservaService;
 import sistemareserva.services.RotaService;
 import sistemareserva.services.UsuarioService;
@@ -31,6 +35,7 @@ public class HomeView extends javax.swing.JFrame {
     private ReservaController _reservaController;
     private UsuarioController _usuarioController;
     private RotaController _rotaController;
+    private LogController _logController;
 
     public static boolean Logado = false;
     public static UsuarioModel usuarioLogado;
@@ -39,18 +44,7 @@ public class HomeView extends javax.swing.JFrame {
      * Creates new form HomeView
      */
     public HomeView() {
-        ReservaRepository repository = new ReservaRepository();
-        ReservaService service = new ReservaService(repository);
-        _reservaController = new ReservaController(service);
-
-        UsuarioRepository usuarioRepository = new UsuarioRepository();
-        UsuarioService usuarioService = new UsuarioService(usuarioRepository);
-        _usuarioController = new UsuarioController(usuarioService);
-
-        RotaRepository rotaRepository = new RotaRepository();
-        RotaService rotaService = new RotaService(rotaRepository);
-        _rotaController = new RotaController(rotaService);
-
+        inicializarDependencias();
         initComponents();
 
         getAllRotas();
@@ -69,6 +63,8 @@ public class HomeView extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableRotas = new javax.swing.JTable();
         btnReservar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        btnLogs = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuEntrar = new javax.swing.JMenuItem();
@@ -95,6 +91,17 @@ public class HomeView extends javax.swing.JFrame {
         btnReservar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnReservarActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("ROTAS");
+
+        btnLogs.setText("Logs");
+        btnLogs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogsActionPerformed(evt);
             }
         });
 
@@ -155,19 +162,28 @@ public class HomeView extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 771, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnReservar)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnLogs)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnReservar, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(76, 76, 76)
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(btnReservar)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnReservar, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(btnLogs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         pack();
@@ -175,7 +191,27 @@ public class HomeView extends javax.swing.JFrame {
 
     private void btnReservarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservarActionPerformed
         // TODO add your handling code here:
-        _reservaController.createReserva(new ReservaModel(UUID.randomUUID(), usuarioLogado.getId()));
+        if (!Logado) {
+            JOptionPane.showMessageDialog(null, "Necessario estar logado para reservar uma rota!");
+            return;
+        }
+        
+        int row = tableRotas.getSelectedRow();
+        if (row >= 0) {
+
+            try {
+                UUID id = UUID.fromString(tableRotas.getValueAt(row, 0).toString());
+                _reservaController.createReserva(new ReservaModel(id, usuarioLogado.getId()));
+
+                JOptionPane.showMessageDialog(null, "Reservado com sucesso");
+            } catch (ReservaExceptions ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Selecione uma rota da lista");
+        }
     }//GEN-LAST:event_btnReservarActionPerformed
 
     private void menuCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCadastrarActionPerformed
@@ -187,10 +223,8 @@ public class HomeView extends javax.swing.JFrame {
 
     private void menuMinhasReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuMinhasReservasActionPerformed
         // TODO add your handling code here:
-        List<ReservaModel> reservas = _reservaController.getReservasByUsuarioId(usuarioLogado.getId());
-
         ReservaView reservasForm = new ReservaView();
-        reservasForm.getReservas(reservas, _reservaController);
+        reservasForm.getReservas(_reservaController);
         reservasForm.setVisible(true);
     }//GEN-LAST:event_menuMinhasReservasActionPerformed
 
@@ -225,20 +259,25 @@ public class HomeView extends javax.swing.JFrame {
         Logado = false;
     }//GEN-LAST:event_menuSairActionPerformed
 
+    private void btnLogsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogsActionPerformed
+        // TODO add your handling code here:
+        LogsView logsView = new LogsView();
+        logsView.getLogs(_logController);
+        logsView.setVisible(true);
+    }//GEN-LAST:event_btnLogsActionPerformed
+
     private void getAllRotas() {
-        List<RotaModel> rotas = _rotaController.getAll();
+        List<RotaViewModel> rotas = _rotaController.getAll();
         DefaultTableModel tabela = new DefaultTableModel();
 
         tabela.addColumn("");
         tabela.addColumn("Origem");
         tabela.addColumn("Destino");
         tabela.addColumn("Valor");
-        
-        
 
         if (!rotas.isEmpty()) {
 
-            for (RotaModel model : rotas) {
+            for (RotaViewModel model : rotas) {
                 tabela.addRow(new Object[]{model.getID(), model.getOrigem(), model.getDestino(), model.getValor()});
             }
         }
@@ -246,6 +285,25 @@ public class HomeView extends javax.swing.JFrame {
         tableRotas.setModel(tabela);
         tableRotas.getColumnModel().getColumn(0).setMaxWidth(0);
         tableRotas.getColumnModel().getColumn(0).setResizable(false);
+    }
+
+    private void inicializarDependencias() {
+        LogRepository logRepository = new LogRepository();
+        LogService logService = new LogService(logRepository);
+        _logController = new LogController(logService);
+        
+        ReservaRepository repository = new ReservaRepository();
+        ReservaService service = new ReservaService(repository,logRepository);
+
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        UsuarioService usuarioService = new UsuarioService(usuarioRepository,logRepository);
+        _usuarioController = new UsuarioController(usuarioService);
+
+        RotaRepository rotaRepository = new RotaRepository();
+        RotaService rotaService = new RotaService(rotaRepository);
+        _rotaController = new RotaController(rotaService);
+
+        _reservaController = new ReservaController(service, rotaService);
     }
 
     /**
@@ -284,7 +342,9 @@ public class HomeView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLogs;
     private javax.swing.JButton btnReservar;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;

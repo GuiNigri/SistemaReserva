@@ -22,6 +22,7 @@ public class CadastrarView extends javax.swing.JFrame {
      */
     public CadastrarView() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**

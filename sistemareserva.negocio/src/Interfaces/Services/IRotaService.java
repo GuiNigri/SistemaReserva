@@ -7,6 +7,7 @@ package Interfaces.Services;
 
 import entity.RotaModel;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -14,4 +15,5 @@ import java.util.List;
  */
 public interface IRotaService {
     List<RotaModel> getRotas();
+    RotaModel getRotaById(UUID rotaId);
 }

@@ -6,7 +6,9 @@
 package Controller;
 
 import Interfaces.Services.IRotaService;
+import ViewModel.RotaViewModel;
 import entity.RotaModel;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +23,17 @@ public class RotaController {
         _rotaService = rotaService;
     }
     
-    public List<RotaModel> getAll(){
-        return _rotaService.getRotas();
+    public List<RotaViewModel> getAll(){
+        return modelToViewModel(_rotaService.getRotas());
+    }
+    
+    private List<RotaViewModel> modelToViewModel(List<RotaModel> rotasModel){
+        List<RotaViewModel> rotasViewModel = new ArrayList<>();
+        
+        for(RotaModel rotaModel : rotasModel){
+            rotasViewModel.add(new RotaViewModel(rotaModel));
+        }
+        
+        return rotasViewModel;
     }
 }

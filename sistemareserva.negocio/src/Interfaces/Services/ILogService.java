@@ -3,17 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Interfaces.Repository;
+package Interfaces.Services;
 
-import entity.RotaModel;
+import entity.LogModel;
 import java.util.List;
-import java.util.UUID;
 
 /**
  *
  * @author Nigri
  */
-public interface IRotaRepository {
-    List<RotaModel> getRotas();
-    RotaModel getRotaById(UUID rotaId);
+public interface ILogService {
+
+    void create(LogModel logModel);
+
+    List<LogModel> getLogs();
 }

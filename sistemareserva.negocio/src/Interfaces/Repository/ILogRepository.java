@@ -5,15 +5,17 @@
  */
 package Interfaces.Repository;
 
-import entity.RotaModel;
+import entity.LogModel;
 import java.util.List;
-import java.util.UUID;
 
 /**
  *
  * @author Nigri
  */
-public interface IRotaRepository {
-    List<RotaModel> getRotas();
-    RotaModel getRotaById(UUID rotaId);
+public interface ILogRepository {
+
+    void create(LogModel logModel);
+
+    List<LogModel> getLogs();
+
 }

@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface IReservaService {
 
     void create(ReservaModel reservaModel);
-    void cancelar(UUID reservaId) throws ReservaExceptions;
+    void cancelar(UUID reservaId,UUID usuarioId) throws ReservaExceptions;
     ReservaModel getByReservaId(UUID reservaId) throws ReservaExceptions;
     List<ReservaModel> getReservasByUsuarioId(UUID usuarioId);
     

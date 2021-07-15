@@ -35,4 +35,15 @@ public class UsuarioModel {
     public String getSenha() {
         return this.senha;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        UsuarioModel outroUsuarioModel = (UsuarioModel) obj;
+        return this.cpf.equals(outroUsuarioModel.getCpf());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.cpf.charAt(0);
+    }
 }

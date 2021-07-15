@@ -6,21 +6,20 @@
 package Repository;
 
 import Interfaces.Repository.IUsuarioRepository;
-import entity.ReservaModel;
 import entity.UsuarioModel;
 import exceptions.UsuarioExceptions;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
  * @author Nigri
  */
 public class UsuarioRepository implements IUsuarioRepository{
-        private List<UsuarioModel> _dbContext;
+        private Set<UsuarioModel> _dbContext;
 
     public UsuarioRepository() {
-        _dbContext = new ArrayList<UsuarioModel>();
+        _dbContext = new HashSet<UsuarioModel>();
     }
     
     @Override
@@ -36,6 +35,10 @@ public class UsuarioRepository implements IUsuarioRepository{
 
     @Override
     public void cadastrar(UsuarioModel usuarioModel) throws UsuarioExceptions{
+        if(_dbContext.contains(usuarioModel)){
+            throw new UsuarioExceptions("Usuario já cadastrado");
+        }
+        
         _dbContext.add(usuarioModel);
     }
     

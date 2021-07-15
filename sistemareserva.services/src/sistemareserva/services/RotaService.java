@@ -9,6 +9,7 @@ import Interfaces.Repository.IRotaRepository;
 import Interfaces.Services.IRotaService;
 import entity.RotaModel;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -25,6 +26,11 @@ public class RotaService implements IRotaService{
     @Override
     public List<RotaModel> getRotas() {
         return _rotaRepository.getRotas();
+    }
+
+    @Override
+    public RotaModel getRotaById(UUID rotaId) {
+        return _rotaRepository.getRotaById(rotaId);
     }
     
 }

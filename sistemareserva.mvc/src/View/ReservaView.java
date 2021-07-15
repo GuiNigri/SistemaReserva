@@ -6,10 +6,10 @@
 package View;
 
 import Controller.ReservaController;
-import entity.ReservaModel;
+import ViewModel.ReservaRotaUsuarioAggregateViewModel;
+import exceptions.ReservaExceptions;
 import java.util.List;
 import java.util.UUID;
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -53,25 +53,35 @@ public class ReservaView extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id", "Rota"
+                "Id", "Emitido para", "Origem", "Destino", "Valor"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane2.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setResizable(false);
             jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(4).setResizable(false);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -80,21 +90,21 @@ public class ReservaView extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCancelar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 975, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnCancelar)
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -104,15 +114,16 @@ public class ReservaView extends javax.swing.JFrame {
         // TODO add your handling code here:
         int row = jTable1.getSelectedRow();
         if (row >= 0) {
-            UUID id = UUID.fromString(jTable1.getValueAt(row, 0).toString());
-            String status = _reservaController.cancelarReserva(id);
 
-            JOptionPane.showMessageDialog(null, status);
+            try {
+                UUID id = UUID.fromString(jTable1.getValueAt(row, 0).toString());
+                _reservaController.cancelarReserva(id);
 
-            if (status != null) {
-                List<ReservaModel> reservas = _reservaController.getReservasByUsuarioId(UUID.randomUUID());
+                getReservas(null);
 
-                getReservas(reservas, _reservaController);
+                JOptionPane.showMessageDialog(null, "Cancelado com sucesso");
+            } catch (ReservaExceptions ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
             }
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
@@ -152,18 +163,25 @@ public class ReservaView extends javax.swing.JFrame {
         });
     }
 
-    public void getReservas(List<ReservaModel> reservas, ReservaController reservaController) {
+    public void getReservas(ReservaController reservaController) {
+        if (reservaController != null) {
+            _reservaController = reservaController;
+        }
 
         DefaultTableModel tabela = new DefaultTableModel();
-        _reservaController = reservaController;
 
-        tabela.addColumn("ID");
-        tabela.addColumn("Rota");
+        List<ReservaRotaUsuarioAggregateViewModel> reservas = _reservaController.getReservasByUsuarioId(HomeView.usuarioLogado.getId());
+
+        tabela.addColumn("Voucher");
+        tabela.addColumn("Emitido para");
+        tabela.addColumn("Origem");
+        tabela.addColumn("Destino");
+        tabela.addColumn("Valor");
 
         if (!reservas.isEmpty()) {
 
-            for (ReservaModel model : reservas) {
-                tabela.addRow(new Object[]{model.getId(), model.getRotaId()});
+            for (ReservaRotaUsuarioAggregateViewModel model : reservas) {
+                tabela.addRow(new Object[]{model.getId(), HomeView.usuarioLogado.getNome(), model.getOrigem(), model.getDestino(), model.getValor()});
             }
         }
 
